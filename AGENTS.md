@@ -56,6 +56,14 @@ gh pr merge --auto --rebase
 - Even if you're fixing your own mistake, CREATE A PR
 - NO EXCEPTIONS - Always use the PR workflow
 
+### Commits
+
+- Commit frequently
+- Organize commits into small, logically cohesive units
+- Group related changes by feature or functionality
+- Make the commit history easy to understand, review, and revert
+- Each commit should represent a distinct, meaningful change with a clear, descriptive commit message
+
 
 ## Key Development Principles
 
