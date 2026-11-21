@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Phishcheck</title>
+  <style>
+    body { color: #17202a; font: 1rem/1.5 system-ui, sans-serif; margin: 3rem auto; max-width: 56rem; padding: 0 1.25rem; }
+    form { display: flex; align-items: center; flex-wrap: wrap; gap: .75rem; }
+    button { font: inherit; padding: .4rem 1rem; }
+    pre { white-space: pre-wrap; overflow-wrap: anywhere; background: #f3f5f7; padding: 1rem; }
+    [role="alert"] { color: #922626; }
+  </style>
+</head>
+<body>
+  <h1>Phishcheck</h1>
+  <form method="post" enctype="multipart/form-data">
+    <label for="email-file">Email file</label>
+    <input id="email-file" type="file" name="file" accept=".eml,.msg" required>
+    <button name="action" value="parse">Parse</button>
+    <button name="action" value="triage">Triage</button>
+  </form>
+  {% if error %}<p role="alert">{{ error }}</p>{% endif %}
+  {% if persistence_error %}<p role="alert">{{ persistence_error }}</p>{% endif %}
+  {% if verdict %}
+  <h2>{{ verdict_label }}</h2>
+  {% for line in verdict_summary %}<p>{{ line }}</p>{% endfor %}
+  <pre>{{ verdict }}</pre>
+  {% endif %}
+  {% if parsed %}
+  <h2>Parsed email</h2>
+  <pre>{{ parsed }}</pre>
+  {% endif %}
+</body>
+</html>

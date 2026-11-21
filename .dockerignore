@@ -1,0 +1,10 @@
+**
+!Dockerfile
+!pyproject.toml
+!uv.lock
+!README.md
+!src/
+!src/phishcheck/
+!src/phishcheck/**
+**/__pycache__/
+**/*.pyc

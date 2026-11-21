@@ -6,7 +6,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from emailscan import tracing
+from phishcheck import tracing
 
 
 def test_settings_precedence_and_blank_uri(
@@ -25,7 +25,8 @@ def test_settings_precedence_and_blank_uri(
 
 
 @pytest.mark.parametrize(
-    "uri,enabled", [(None, None), ("", True), ("http://server", False)]
+    "uri,enabled",
+    [(None, None), ("", True), ("http://server", False), ("http://server", None)],
 )
 def test_disabled_tracing_does_not_import_mlflow(
     monkeypatch: pytest.MonkeyPatch, uri: str | None, enabled: bool | None
@@ -48,7 +49,7 @@ def test_tracing_enables_dspy_autolog(monkeypatch: pytest.MonkeyPatch) -> None:
     assert (
         tracing.configure_tracing(
             tracing.TracingSettings(
-                tracking_uri="http://server", experiment_name="test"
+                tracking_uri="http://server", experiment_name="test", enabled=True
             )
         )
         is True
@@ -72,7 +73,22 @@ def test_tracing_failure_warns_and_continues(
         integration.autolog.side_effect = RuntimeError("failure")
     monkeypatch.setattr(importlib, "import_module", loader)
     assert (
-        tracing.configure_tracing(tracing.TracingSettings(tracking_uri="http://server"))
+        tracing.configure_tracing(
+            tracing.TracingSettings(tracking_uri="http://server", enabled=True)
+        )
         is False
     )
     assert "MLflow tracing setup failed" in caplog.text
+
+
+def test_disabled_assessment_suppresses_previous_tracing() -> None:
+    import dspy
+    from dspy.utils.callback import BaseCallback
+
+    callback = BaseCallback()
+    with dspy.context(callbacks=[callback]):
+        with tracing.trace_assessment(
+            tracing.TracingSettings(tracking_uri="http://server", enabled=False)
+        ):
+            assert dspy.settings.callbacks == []
+        assert dspy.settings.callbacks == [callback]

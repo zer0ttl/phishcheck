@@ -1,0 +1,46 @@
+services:
+  app:
+    build: .
+    ports:
+      - "127.0.0.1:${PHISHCHECK_PORT:-8000}:8000"
+    environment:
+      PHISHCHECK_DATABASE_PATH: /data/history.sqlite
+      PHISHCHECK_TIKA_URL: http://tika:9998
+      DSPY_MODEL: ${DSPY_MODEL:-typesafe:jev-latest}
+      DSPY_API_KEY: ${DSPY_API_KEY:-}
+      DSPY_API_BASE: ${DSPY_API_BASE:-}
+      DSPY_LM_KWARGS: "${DSPY_LM_KWARGS:-{}}"
+      DSPY_TRACK_USAGE: ${DSPY_TRACK_USAGE:-true}
+      TYPESAFE_API_KEY: ${TYPESAFE_API_KEY:-}
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+      MLFLOW_EXPERIMENT_NAME: ${MLFLOW_EXPERIMENT_NAME:-phishcheck}
+      MLFLOW_ENABLED: ${MLFLOW_ENABLED:-false}
+    depends_on:
+      - tika
+      - mlflow
+    volumes:
+      - phishcheck-data:/data
+  tika:
+    image: apache/tika:4.2.0-2
+    mem_limit: 1g
+    cpus: 2
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v3.18.0
+    command:
+      - mlflow
+      - server
+      - --host
+      - 0.0.0.0
+      - --allowed-hosts
+      - mlflow:5000,localhost:5000,127.0.0.1:5000
+      - --backend-store-uri
+      - sqlite:////mlflow-db/mlflow.sqlite
+      - --artifacts-destination
+      - /mlflow-artifacts
+    volumes:
+      - mlflow-db:/mlflow-db
+      - mlflow-artifacts:/mlflow-artifacts
+volumes:
+  phishcheck-data:
+  mlflow-db:
+  mlflow-artifacts:

@@ -1,0 +1,9 @@
+From: analyst@example.com
+To: recipient@example.net
+Subject: Example message
+Date: Thu, 20 Nov 2025 12:00:00 +0000
+Message-ID: <example-1@example.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+
+Please review this harmless example: https://example.com/info

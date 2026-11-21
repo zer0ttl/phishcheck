@@ -7,7 +7,7 @@ import dspy
 import pytest
 from pydantic import ValidationError
 
-from emailscan import config
+from phishcheck import config
 
 
 def test_configuration_precedence_and_blank_values(
