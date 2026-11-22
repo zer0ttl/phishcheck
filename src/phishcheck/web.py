@@ -5,6 +5,7 @@ from pathlib import Path
 
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.concurrency import run_in_threadpool
 from starlette.datastructures import UploadFile
@@ -16,7 +17,8 @@ from .config import ApplicationSettings
 from .triage import VERDICT_LABELS
 
 MAX_FORM_OVERHEAD = 1024 * 1024
-templates = Jinja2Templates(directory=Path(__file__).with_name("templates"))
+WEB_DIR = Path(__file__).parent
+templates = Jinja2Templates(directory=WEB_DIR / "templates")
 
 
 class RequestTooLarge(MultiPartException):
@@ -36,6 +38,7 @@ def create_app(settings: ApplicationSettings | None = None) -> FastAPI:
     settings = settings or ApplicationSettings()
     request_limit = settings.max_input_bytes + MAX_FORM_OVERHEAD
     app = FastAPI(title="Phishcheck")
+    app.mount("/static", StaticFiles(directory=WEB_DIR / "static"), name="static")
 
     @app.get("/", response_class=HTMLResponse)
     def home(request: Request) -> HTMLResponse:
@@ -118,7 +121,7 @@ def create_app(settings: ApplicationSettings | None = None) -> FastAPI:
             request,
             "index.html",
             {
-                "parsed": run.parsed.model_dump_json(indent=2) if run.parsed else None,
+                "parsed": run.parsed,
                 "verdict": run.verdict,
                 "verdict_label": run.verdict.label if run.verdict else None,
                 "verdict_labels": VERDICT_LABELS,

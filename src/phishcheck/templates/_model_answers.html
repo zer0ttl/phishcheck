@@ -1,0 +1,59 @@
+{% macro percent(value) %}{{ '%.1f' | format(value * 100) }}%{% endmacro %}
+{% macro bar(value, tone='') %}
+  <div class="progress-bar{% if tone %} {{ tone }}{% endif %}" style="width: {{ '%.6f' | format(value * 100) }}%"></div>
+{% endmacro %}
+{% macro probability(label, value, tone) %}
+  <div class="probability-row {{ tone }}">
+    <div class="probability-label"><span>{{ label }}</span><strong>{{ percent(value) }}</strong></div>
+    <div class="progress progress-sm" aria-hidden="true">{{ bar(value) }}</div>
+  </div>
+{% endmacro %}
+<details class="model-answers">
+  <summary>Model answers</summary>
+  <div class="model-probabilities">
+    <p class="model-choice">Model verdict <strong>{{ verdict_labels[verdict.model_choice.choice] }}</strong></p>
+    <section aria-label="Verdict probabilities">
+      <h3>Verdict probabilities</h3>
+      {% for choice, value in verdict.model_choice.probabilities | dictsort(by='value', reverse=true) %}
+        {{ probability(verdict_labels[choice], value, 'probability-' ~ choice) }}
+      {% endfor %}
+    </section>
+    <section aria-label="Evidence strength probabilities">
+      <h3>Evidence strength probabilities</h3>
+      {% for score, value in verdict.phishing_evidence_score.probabilities | dictsort %}
+        {{ probability(score ~ ' out of 4', value, 'probability-strength-' ~ score) }}
+      {% endfor %}
+    </section>
+    <section class="model-findings" aria-label="Individual findings">
+      <h3>Individual findings</h3>
+      <div class="finding-grid">
+        {% set benign = {'classification': 'benign_explanation', 'probability': verdict.benign_explanation} %}
+        {% set findings = [benign] + verdict.judgments %}
+        {% set scored = findings | rejectattr('probability', 'none') | sort(attribute='probability', reverse=true) %}
+        {% set unscored = findings | selectattr('probability', 'none') | list %}
+        {% for finding in scored + unscored %}
+          <div class="probability-row {{ 'probability-likely_legitimate' if finding.classification == 'benign_explanation' else 'probability-likely_phishing' }}">
+            <h4>{{ finding.classification | replace('_', ' ') | capitalize | replace(' url', ' URL') }}</h4>
+            {% if finding.probability is none %}
+              <div class="finding-status">Unscored</div>
+            {% else %}
+              <div class="progress progress-sm" aria-hidden="true">
+                {{ bar(finding.probability) }}{{ bar(1 - finding.probability, 'probability-no') }}
+              </div>
+              <div class="probability-label finding-status">
+                <span class="probability-yes">Yes {{ percent(finding.probability) }}</span>
+                <span>No {{ percent(1 - finding.probability) }}</span>
+              </div>
+            {% endif %}
+            {% if finding.status is defined %}
+              <div class="finding-status">
+                {{ finding.status | replace('_', ' ') | capitalize }}
+                {% if finding.missing_field %}<br>Missing {{ finding.missing_field | replace('_', ' ') | replace('.', ' ') }}{% endif %}
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+  </div>
+</details>

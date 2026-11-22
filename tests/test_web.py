@@ -36,6 +36,16 @@ def test_parse_upload(client: TestClient) -> None:
     assert 'href="https://example.com/evidence"' not in response.text
 
 
+def test_upload_page_serves_assets_locally(client: TestClient) -> None:
+    page = BeautifulSoup(client.get("/").text, "html.parser")
+    assets = [link["href"] for link in page.find_all("link", rel="stylesheet")]
+    assets += [script["src"] for script in page.find_all("script", src=True)]
+    assert len(assets) == 3
+    for asset in assets:
+        assert asset.startswith("http://testserver/static/")
+        assert client.get(asset).status_code == 200
+
+
 def test_html_link_pair_is_rendered_as_inert_text(client: TestClient) -> None:
     mail = (
         b"From: sender@example.com\r\nTo: recipient@example.com\r\nSubject: Links\r\n"
@@ -47,7 +57,13 @@ def test_html_link_pair_is_rendered_as_inert_text(client: TestClient) -> None:
     )
     assert response.status_code == 200
     rendered = BeautifulSoup(response.text, "html.parser")
-    assert rendered.find("a") is None
+    assert rendered.find("a", href="https://example.com/destination") is None
+    assert rendered.find("report") is None
+    links = rendered.find("section", attrs={"aria-label": "Links"})
+    assert links is not None
+    assert "Read the <report>" in links.get_text(" ", strip=True)
+    assert "https://example.com/destination" in links.get_text(" ", strip=True)
+    assert rendered.find("section", attrs={"aria-label": "Verdict"}) is None
     report = rendered.find("pre")
     assert report is not None
     assert json.loads(report.get_text())["urls"] == [
@@ -122,20 +138,27 @@ def test_triage_upload(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> N
     assert "Likely legitimate 90.0%" in text
     assert "2 out of 4 25.0%" in text
     assert "3 out of 4 50.0%" in text
-    assert "Benign explanation 10.0% 90.0%" in text
-    assert "Malicious URL 95.0% 5.0% Supported" in text
+    assert "Benign explanation Yes 10.0% No 90.0%" in text
+    assert "Malicious URL Yes 95.0% No 5.0% Supported" in text
     assert "Insufficient evidence" in text
-    assert "Malicious attachment — — Insufficient evidence Missing attachments" in text
-    caption = answers.find("caption", string="Individual findings")
-    assert caption is not None
-    findings = caption.find_parent("table")
+    assert (
+        "Malicious attachment Unscored Insufficient evidence Missing attachments"
+        in text
+    )
+    findings = answers.find("section", attrs={"aria-label": "Individual findings"})
     assert findings is not None
-    finding_labels = [cell.get_text(strip=True) for cell in findings.select("tbody th")]
+    finding_labels = [
+        heading.get_text(strip=True) for heading in findings.find_all("h4")
+    ]
     assert finding_labels[:4] == [
         "Malicious URL",
         "Spoofing",
         "Benign explanation",
         "Malware",
+    ]
+    assert [bar.get("style") for bar in findings.select(".progress-bar")[:2]] == [
+        "width: 95.000000%",
+        "width: 5.000000%",
     ]
     assert "Parsed email" in response.text
 
@@ -160,3 +183,4 @@ def test_triage_failed_provider_preserves_report(
     assert "Provider unavailable" in response.text
     assert "Parsed email" in response.text
     assert "&lt;script&gt;" in response.text
+    assert 'aria-label="Sender and subject"' in response.text
