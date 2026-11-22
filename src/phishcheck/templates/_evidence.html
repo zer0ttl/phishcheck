@@ -1,0 +1,40 @@
+{% set extraction_status = {'complete': 'Complete', 'truncated': 'Truncated', 'unavailable': 'Unavailable', 'not_extracted': 'Not extracted'} %}
+<div class="evidence-heading">
+  <h2>Parsed evidence</h2>
+  <code>{{ parsed.filename }}</code>
+</div>
+<div class="evidence-grid">
+  <section class="card" aria-label="Sender and subject">
+    <div class="card-header"><h3 class="card-title">Sender and subject</h3></div>
+    <dl class="card-body message-headers">
+      <dt>From</dt><dd>{{ parsed.headers.get('From') or 'Missing' }}</dd>
+      <dt>Subject</dt><dd>{{ parsed.headers.get('Subject') or 'Missing' }}</dd>
+    </dl>
+  </section>
+  <section class="card" aria-label="Links">
+    <div class="card-header"><h3 class="card-title">Links</h3><span class="badge bg-secondary-lt ms-auto">{{ parsed.urls | length }}</span></div>
+    <ul class="list-group list-group-flush">
+      {% for link in parsed.urls %}
+      <li class="list-group-item link-evidence">
+        <span>{{ link.text or 'No display text' }}</span>
+        <code>{{ link.url or 'No destination' }}</code>
+      </li>
+      {% else %}
+      <li class="list-group-item text-secondary">No links extracted.</li>
+      {% endfor %}
+    </ul>
+  </section>
+  <section class="card" aria-label="Attachments">
+    <div class="card-header"><h3 class="card-title">Attachments</h3><span class="badge bg-secondary-lt ms-auto">{{ parsed.attachments | length }}</span></div>
+    <ul class="list-group list-group-flush">
+      {% for attachment in parsed.attachments %}
+      <li class="list-group-item attachment-evidence">
+        <code>{{ attachment.name or 'Unnamed attachment' }}</code>
+        <span class="badge {{ 'bg-green-lt' if attachment.status == 'complete' else 'bg-yellow-lt' }}">{{ extraction_status[attachment.status] }}</span>
+      </li>
+      {% else %}
+      <li class="list-group-item text-secondary">No attachments found.</li>
+      {% endfor %}
+    </ul>
+  </section>
+</div>
