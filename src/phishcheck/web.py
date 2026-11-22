@@ -13,6 +13,7 @@ from starlette.requests import ClientDisconnect
 
 from . import service
 from .config import ApplicationSettings
+from .triage import VERDICT_LABELS
 
 MAX_FORM_OVERHEAD = 1024 * 1024
 templates = Jinja2Templates(directory=Path(__file__).with_name("templates"))
@@ -118,10 +119,9 @@ def create_app(settings: ApplicationSettings | None = None) -> FastAPI:
             "index.html",
             {
                 "parsed": run.parsed.model_dump_json(indent=2) if run.parsed else None,
-                "verdict": run.verdict.model_dump_json(indent=2)
-                if run.verdict
-                else None,
+                "verdict": run.verdict,
                 "verdict_label": run.verdict.label if run.verdict else None,
+                "verdict_labels": VERDICT_LABELS,
                 "verdict_summary": run.verdict.summary_lines() if run.verdict else [],
                 "error": run.diagnostic,
                 "persistence_error": run.persistence_error,
