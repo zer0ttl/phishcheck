@@ -46,6 +46,21 @@ def test_upload_page_serves_assets_locally(client: TestClient) -> None:
         assert client.get(asset).status_code == 200
 
 
+def test_home_offers_file_drop_and_sample_email(client: TestClient) -> None:
+    page = BeautifulSoup(client.get("/").text, "html.parser")
+    form = page.find("form", enctype="multipart/form-data")
+    assert form is not None
+    assert form.find("h2", string="Drop an email file here") is not None
+    choose_file = form.find("button", string="Choose file")
+    assert choose_file is not None and choose_file.has_attr("hidden")
+    assert form.find("input", attrs={"type": "file", "accept": ".eml,.msg"})
+    assert form.find("button", string="Try a sample email") is not None
+    assert [button["value"] for button in form.select('button[type="submit"]')] == [
+        "triage",
+        "parse",
+    ]
+
+
 def test_html_link_pair_is_rendered_as_inert_text(client: TestClient) -> None:
     mail = (
         b"From: sender@example.com\r\nTo: recipient@example.com\r\nSubject: Links\r\n"
