@@ -15,17 +15,29 @@
   <main class="content-width">
     <form id="email-upload" class="upload" method="post" enctype="multipart/form-data">
       <h1>Check an email</h1>
-      <p>Inspect an email for signs of phishing.</p>
-      <div class="file-panel">
-        <label class="form-label" for="email-file">Email file</label>
-        <small id="file-formats">.eml or .msg</small>
-        <input class="form-control" id="email-file" type="file" name="file" accept=".eml,.msg" aria-describedby="file-formats" required>
+      <p class="upload-intro">Inspect a suspicious message for signs of phishing.</p>
+      <div class="upload-card">
+        <div class="file-panel" id="file-panel">
+          <span class="file-icon" aria-hidden="true"><span></span></span>
+          <h2>Drop an email file here</h2>
+          <p id="file-formats">One .eml or .msg file</p>
+          <p id="selected-file" hidden></p>
+          <div class="file-picker">
+            <input id="email-file" type="file" name="file" accept=".eml,.msg" aria-label="Email file" aria-describedby="file-formats" required>
+            <button type="button" class="btn" id="choose-file" aria-describedby="file-formats" hidden>Choose file</button>
+          </div>
+        </div>
+        <div class="upload-actions">
+          <button type="submit" class="btn btn-success" name="action" value="triage">Triage</button>
+          <button type="submit" class="btn btn-outline-secondary" name="action" value="parse">Parse</button>
+        </div>
+        <p id="upload-status" role="status"></p>
       </div>
-      <div class="upload-actions">
-        <button type="submit" class="btn btn-success" name="action" value="triage">Triage</button>
-        <button type="submit" class="btn btn-outline-secondary" name="action" value="parse">Parse</button>
-      </div>
-      <p id="upload-status" role="status"></p>
+      <button type="button" class="sample-email" id="sample-email" hidden>Try a sample email</button>
+      <dl class="upload-guide">
+        <div><dt>Triage</dt><dd>Get a phishing verdict and see the evidence behind it.</dd></div>
+        <div><dt>Parse</dt><dd>Review the sender, links, and attachments from the message.</dd></div>
+      </dl>
     </form>
     {% if error %}<p class="alert alert-danger" role="alert">{{ error }}</p>{% endif %}
     {% if persistence_error %}<p class="alert alert-danger" role="alert">{{ persistence_error }}</p>{% endif %}
