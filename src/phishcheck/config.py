@@ -1,10 +1,38 @@
 """Environment-backed provider configuration, independent of the example."""
 
+import os
+from pathlib import Path
 from typing import Any
 
-import dspy
 from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+MAX_INPUT_BYTES = 25 * 1024 * 1024
+
+
+def _default_database_path() -> Path:
+    data_home = os.environ.get("XDG_DATA_HOME")
+    root = Path(data_home) if data_home else Path.home() / ".local" / "share"
+    return root / "phishcheck" / "history.sqlite"
+
+
+class ApplicationSettings(BaseSettings):
+    """Configure local intake, extraction, and persistence."""
+
+    model_config = SettingsConfigDict(
+        env_prefix="PHISHCHECK_",
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
+    )
+    database_path: Path = Field(default_factory=_default_database_path)
+    tika_url: str | None = None
+    max_input_bytes: int = Field(default=MAX_INPUT_BYTES, gt=0)
+
+    @field_validator("tika_url", mode="before")
+    @classmethod
+    def blank_to_none(cls, value: object) -> object:
+        return None if isinstance(value, str) and not value.strip() else value
 
 
 class Settings(BaseSettings):
@@ -45,6 +73,8 @@ def configure(settings: Settings) -> Any:
     Returns:
         The configured DSPy language model.
     """
+    import dspy
+
     options: dict[str, Any] = {"model": settings.model, **settings.lm_kwargs}
     if settings.api_key is not None:
         options["api_key"] = settings.api_key

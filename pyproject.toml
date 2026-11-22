@@ -1,26 +1,34 @@
 [project]
-name = "emailscan"
+name = "phishcheck"
 version = "0.1.0"
-description = "Typed event assessment with DSPy and Jev"
+description = "Email parsing and typed phishing triage"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "beautifulsoup4>=4.15.0",
     "dspy>=3.5.0",
+    "eml-parser>=4.7.1",
+    "fastapi>=0.165.0",
+    "httpx>=0.28.1",
+    "jinja2>=3.1.6",
     "litellm>=1.109.1",
+    "magika>=1.0.3",
     "mlflow>=3.18.0",
     "pydantic>=2.14.3",
     "pydantic-settings>=2.16.3",
+    "python-multipart>=0.0.34",
+    "uvicorn>=0.54.0",
 ]
 
 [project.scripts]
-emailscan = "emailscan.cli:main"
+phishcheck = "phishcheck.cli:main"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/emailscan"]
+packages = ["src/phishcheck"]
 
 [dependency-groups]
 dev = ["pytest>=9.2.0", "ruff>=0.15.22", "mypy>=2.3.0"]
@@ -32,7 +40,7 @@ target-version = "py313"
 select = ["E4", "E7", "E9", "F", "I"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["emailscan"]
+known-first-party = ["phishcheck"]
 
 [tool.mypy]
 python_version = "3.13"
