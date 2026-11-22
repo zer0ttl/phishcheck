@@ -88,14 +88,14 @@ def test_triage_upload(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> N
         return Assessment(
             verdict=classify(
                 evidence,
-                {"malicious_url": 0.95},
+                {"malicious_url": 0.95, "spoofing": 0.65, "malware": 0.0},
                 model_choice=ModelChoice(
                     choice="likely_legitimate",
-                    probabilities={"likely_legitimate": 0.9},
+                    probabilities={"likely_legitimate": 0.9, "likely_phishing": 0.1},
                     confidence=0.8,
                 ),
                 phishing_evidence_score=PhishingEvidenceScore(
-                    score=3.0, probabilities={3: 1.0}, confidence=0.9
+                    score=3.0, probabilities={2: 0.25, 3: 0.5, 4: 0.25}, confidence=0.9
                 ),
                 benign_explanation=0.1,
             ),
@@ -111,7 +111,32 @@ def test_triage_upload(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> N
     assert "Phishing evidence strength: 3.0 out of 4" in response.text
     assert "Jev selected Likely legitimate (90%)." in response.text
     assert "Supported attack findings conflict" in response.text
-    assert "malicious_url" in response.text
+    rendered = BeautifulSoup(response.text, "html.parser")
+    summary = rendered.find("summary", string="Model answers")
+    assert summary is not None
+    answers = summary.find_parent("details")
+    assert answers is not None and not answers.has_attr("open")
+    assert answers.find("h2", string="Needs review") is None
+    text = answers.get_text(" ", strip=True)
+    assert "Likely phishing 10.0%" in text
+    assert "Likely legitimate 90.0%" in text
+    assert "2 out of 4 25.0%" in text
+    assert "3 out of 4 50.0%" in text
+    assert "Benign explanation 10.0% 90.0%" in text
+    assert "Malicious URL 95.0% 5.0% Supported" in text
+    assert "Insufficient evidence" in text
+    assert "Malicious attachment — — Insufficient evidence Missing attachments" in text
+    caption = answers.find("caption", string="Individual findings")
+    assert caption is not None
+    findings = caption.find_parent("table")
+    assert findings is not None
+    finding_labels = [cell.get_text(strip=True) for cell in findings.select("tbody th")]
+    assert finding_labels[:4] == [
+        "Malicious URL",
+        "Spoofing",
+        "Benign explanation",
+        "Malware",
+    ]
     assert "Parsed email" in response.text
 
 
