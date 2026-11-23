@@ -1,0 +1,94 @@
+<div class="mb-3.5 flex flex-wrap items-center justify-between gap-3">
+  <div class="flex min-w-0 items-center gap-2.5">
+    <span class="grid size-9.5 shrink-0 place-items-center rounded-lg border border-zinc-200 bg-white text-lg" aria-hidden="true">✉</span>
+    <div class="min-w-0">
+      <p class="font-semibold wrap-anywhere">{{ parsed.filename if parsed else 'Email analysis' }}</p>
+      <p class="text-sm text-zinc-600">
+        {% if verdict %}Triage complete{% elif action == 'triage' %}Triage incomplete{% else %}Parse complete{% endif %}
+      </p>
+    </div>
+  </div>
+  <a href="{{ url_for('home') }}" class="button">Analyze another email</a>
+</div>
+
+{% if verdict %}
+<section class="report-card report-summary verdict verdict-{{ verdict.final_verdict }}" aria-label="Verdict">
+  <div>
+    <p class="report-label">Verdict</p>
+    <h1>{{ verdict_label }}</h1>
+    <p class="mt-1.75 text-sm text-zinc-600">{{ verdict_summary[0] }}</p>
+  </div>
+  {% if verdict_summary[1:] %}
+  <div class="report-summary-details">
+    <h2 class="font-semibold">{{ 'Why it needs review' if verdict.final_verdict == 'needs_review' else 'Verdict reasons' }}</h2>
+    <ul class="mt-1.25 list-disc space-y-0.75 ps-4.5 text-zinc-600">
+      {% for line in verdict_summary[1:] %}<li>{{ line }}</li>{% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+</section>
+{% include '_model_answers.html' %}
+{% elif parsed %}
+<section class="report-card report-summary" aria-labelledby="report-heading">
+  <div>
+    <p class="report-label">Subject</p>
+    <h1 id="report-heading">{{ parsed.headers.get('Subject') or 'No subject' }}</h1>
+    <p class="mt-1.75 text-sm text-zinc-600">From <strong class="text-zinc-800">{{ parsed.headers.get('From') or 'Missing' }}</strong></p>
+  </div>
+  <div class="report-summary-details">
+    <h2 class="font-semibold">Extracted from the email</h2>
+    {% set link_count = parsed.urls | length %}
+    {% set attachment_count = parsed.attachments | length %}
+    <p class="mt-1.75 text-sm text-zinc-600">{{ link_count }} {{ 'link' if link_count == 1 else 'links' }} and {{ attachment_count }} {{ 'attachment' if attachment_count == 1 else 'attachments' }}</p>
+  </div>
+</section>
+{% endif %}
+
+{% if parsed %}
+{% include '_evidence.html' %}
+<section class="report-card mt-4.5" aria-labelledby="message-details-heading" id="message-details">
+  <div class="report-section-heading"><h2 id="message-details-heading">Message details</h2></div>
+  <div class="report-tabs" role="tablist" aria-label="Message details" hidden>
+    <button type="button" id="body-tab" role="tab" aria-selected="true" aria-controls="report-body">Message body</button>
+    <button type="button" id="headers-tab" role="tab" aria-selected="false" aria-controls="report-headers">Headers</button>
+    <button type="button" id="json-tab" role="tab" aria-selected="false" aria-controls="report-json">Raw JSON</button>
+  </div>
+  <div class="report-panel" id="report-body">
+    <h3 class="report-panel-heading">Message body</h3>
+    <div class="whitespace-pre-wrap wrap-anywhere">{{ parsed.body or 'No message body recovered.' }}</div>
+  </div>
+  <div class="report-panel" id="report-headers">
+    <h3 class="report-panel-heading">Headers</h3>
+    {% if parsed.headers_all %}
+    <dl class="header-list">
+      {% for header in parsed.headers_all %}
+      <div>
+        <dt>{{ header.name }}</dt>
+        <dd>{{ header.value }}</dd>
+      </div>
+      {% endfor %}
+    </dl>
+    {% else %}
+    <p class="text-zinc-600">No headers recovered.</p>
+    {% endif %}
+  </div>
+  <div class="report-panel" id="report-json">
+    <h3 class="report-panel-heading">Raw JSON</h3>
+    <details data-primary-json>
+      <summary>Parsed email JSON</summary>
+      <pre>{{ parsed.model_dump_json(indent=2) }}</pre>
+    </details>
+    {% if verdict %}
+    <details>
+      <summary>Assessment JSON</summary>
+      <pre>{{ verdict.model_dump_json(indent=2) }}</pre>
+    </details>
+    {% endif %}
+  </div>
+</section>
+{% elif verdict %}
+<details>
+  <summary>Assessment JSON</summary>
+  <pre>{{ verdict.model_dump_json(indent=2) }}</pre>
+</details>
+{% endif %}
