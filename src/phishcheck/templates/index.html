@@ -4,32 +4,40 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Phishcheck</title>
-  <link rel="stylesheet" href="{{ url_for('static', path='vendor/tabler/tabler.min.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', path='phishcheck.css') }}">
+  {% if parsed %}
+  <script src="{{ url_for('static', path='report.js') }}" defer></script>
+  {% elif not verdict %}
   <script src="{{ url_for('static', path='upload.js') }}" defer></script>
+  {% endif %}
 </head>
 <body>
-  <header class="site-header">
-    <div class="content-width"><span class="brand-mark" aria-hidden="true">✓</span> PhishCheck</div>
+  <header class="border-b border-zinc-200 bg-white text-zinc-900">
+    <div class="content-width flex items-center gap-2.75 py-4.75 text-[1.22rem] font-bold tracking-tight"><span class="brand-mark" aria-hidden="true">✓</span> PhishCheck</div>
   </header>
   <main class="content-width">
+    {% if error %}<p class="notice-error" role="alert">{{ error }}</p>{% endif %}
+    {% if persistence_error %}<p class="notice-error" role="alert">{{ persistence_error }}</p>{% endif %}
+    {% if parsed or verdict %}
+    {% include '_report.html' %}
+    {% else %}
     <form id="email-upload" class="upload" method="post" enctype="multipart/form-data">
       <h1>Check an email</h1>
-      <p class="upload-intro">Inspect a suspicious message for signs of phishing.</p>
-      <div class="upload-card">
+      <p class="mt-3.25 mb-6 text-base leading-relaxed text-zinc-600">Inspect a suspicious message for signs of phishing.</p>
+      <div class="upload-card rounded-lg bg-white pb-3.5 shadow-xs inset-ring-1 inset-ring-zinc-200">
         <div class="file-panel" id="file-panel">
           <span class="file-icon" aria-hidden="true"><span></span></span>
           <h2>Drop an email file here</h2>
           <p id="file-formats">One .eml or .msg file</p>
           <p id="selected-file" hidden></p>
-          <div class="file-picker">
+          <div class="mt-1.25">
             <input id="email-file" type="file" name="file" accept=".eml,.msg" aria-label="Email file" aria-describedby="file-formats" required>
-            <button type="button" class="btn" id="choose-file" aria-describedby="file-formats" hidden>Choose file</button>
+            <button type="button" class="button" id="choose-file" aria-describedby="file-formats" hidden>Choose file</button>
           </div>
         </div>
-        <div class="upload-actions">
-          <button type="submit" class="btn btn-success" name="action" value="triage">Triage</button>
-          <button type="submit" class="btn btn-outline-secondary" name="action" value="parse">Parse</button>
+        <div class="mt-3.5 mb-1.25 flex flex-wrap justify-center gap-2">
+          <button type="submit" class="button button-primary" name="action" value="triage">Triage</button>
+          <button type="submit" class="button" name="action" value="parse">Parse</button>
         </div>
         <p id="upload-status" role="status"></p>
       </div>
@@ -39,38 +47,6 @@
         <div><dt>Parse</dt><dd>Review the sender, links, and attachments from the message.</dd></div>
       </dl>
     </form>
-    {% if error %}<p class="alert alert-danger" role="alert">{{ error }}</p>{% endif %}
-    {% if persistence_error %}<p class="alert alert-danger" role="alert">{{ persistence_error }}</p>{% endif %}
-    {% if verdict %}
-    <section class="card verdict verdict-{{ verdict.final_verdict }}" aria-label="Verdict">
-      <div class="card-body">
-        <p class="verdict-caption">Verdict</p>
-        <h2>{{ verdict_label }}</h2>
-        <ul class="verdict-reasons">
-          {% for line in verdict_summary %}<li>{{ line }}</li>{% endfor %}
-        </ul>
-      </div>
-    </section>
-    {% endif %}
-    {% if parsed %}{% include '_evidence.html' %}{% endif %}
-    {% if parsed %}
-    <details>
-      <summary>Message body</summary>
-      <div class="message-body">{{ parsed.body or 'No message body recovered.' }}</div>
-    </details>
-    {% endif %}
-    {% if verdict %}
-    {% include "_model_answers.html" %}
-    <details>
-      <summary>Assessment JSON</summary>
-      <pre>{{ verdict.model_dump_json(indent=2) }}</pre>
-    </details>
-    {% endif %}
-    {% if parsed %}
-    <details>
-      <summary>Parsed email JSON</summary>
-      <pre>{{ parsed.model_dump_json(indent=2) }}</pre>
-    </details>
     {% endif %}
   </main>
 </body>

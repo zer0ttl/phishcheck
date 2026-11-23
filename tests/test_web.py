@@ -11,6 +11,7 @@ from phishcheck.web import create_app
 
 MAIL = (
     b"From: sender@example.com\r\nTo: recipient@example.com\r\nSubject: Test\r\n"
+    b"rEpLy-To: support@example.com\r\n"
     b"Content-Type: text/plain; charset=utf-8\r\n\r\n"
     b"<script>synthetic</script> https://example.com/evidence\r\n"
 )
@@ -30,6 +31,31 @@ def test_parse_upload(client: TestClient) -> None:
         "/", files={"file": ("fixture.eml", MAIL)}, data={"action": "parse"}
     )
     assert response.status_code == 200
+    rendered = BeautifulSoup(response.text, "html.parser")
+    assert rendered.find("form", enctype="multipart/form-data") is None
+    title = rendered.find("h1")
+    assert title is not None and title.get_text(strip=True) == "Test"
+    again = rendered.find("a", string="Analyze another email")
+    assert again is not None
+    assert client.get(str(again["href"])).status_code == 200
+    tabs = rendered.select_one('[role="tablist"][aria-label="Message details"]')
+    assert tabs is not None
+    assert [tab.get_text(strip=True) for tab in tabs.find_all("button")] == [
+        "Message body",
+        "Headers",
+        "Raw JSON",
+    ]
+    headers = rendered.find(id="report-headers")
+    assert headers is not None
+    assert "sender@example.com" in headers.get_text()
+    reply_to = rendered.find("summary", string="Reply-To")
+    assert reply_to is not None
+    reply_to_details = reply_to.find_parent("details")
+    assert reply_to_details is not None
+    assert "support@example.com" in reply_to_details.get_text()
+    script = rendered.find("script", src=True)
+    assert script is not None
+    assert client.get(str(script["src"])).status_code == 200
     assert "&lt;script&gt;" in response.text
     assert "<script>" not in response.text
     assert "https://example.com/evidence" in response.text
@@ -38,12 +64,16 @@ def test_parse_upload(client: TestClient) -> None:
 
 def test_upload_page_serves_assets_locally(client: TestClient) -> None:
     page = BeautifulSoup(client.get("/").text, "html.parser")
-    assets = [link["href"] for link in page.find_all("link", rel="stylesheet")]
-    assets += [script["src"] for script in page.find_all("script", src=True)]
-    assert len(assets) == 3
-    for asset in assets:
-        assert asset.startswith("http://testserver/static/")
-        assert client.get(asset).status_code == 200
+    assets = [str(link["href"]) for link in page.find_all("link", rel="stylesheet")]
+    assets += [str(script["src"]) for script in page.find_all("script", src=True)]
+    assert assets == [
+        "http://testserver/static/phishcheck.css",
+        "http://testserver/static/upload.js",
+    ]
+    stylesheet = client.get(assets[0])
+    assert stylesheet.status_code == 200
+    assert "tailwindcss v4." in stylesheet.text
+    assert client.get(assets[1]).status_code == 200
 
 
 def test_home_offers_file_drop_and_sample_email(client: TestClient) -> None:
@@ -92,6 +122,9 @@ def test_invalid_upload(client: TestClient) -> None:
         "/", files={"file": ("fixture.eml", b"invalid")}, data={"action": "parse"}
     )
     assert response.status_code == 400
+    assert BeautifulSoup(response.text, "html.parser").find(
+        "form", enctype="multipart/form-data"
+    )
 
 
 def test_oversized_request(monkeypatch: pytest.MonkeyPatch, client: TestClient) -> None:
@@ -138,11 +171,13 @@ def test_triage_upload(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> N
         "/", files={"file": ("fixture.eml", MAIL)}, data={"action": "triage"}
     )
     assert response.status_code == 200
-    assert "<h2>Needs review</h2>" in response.text
     assert "Phishing evidence strength: 3.0 out of 4" in response.text
     assert "Jev selected Likely legitimate (90%)." in response.text
     assert "Supported attack findings conflict" in response.text
     rendered = BeautifulSoup(response.text, "html.parser")
+    title = rendered.find("h1")
+    assert title is not None and title.get_text(strip=True) == "Needs review"
+    assert rendered.find("form", enctype="multipart/form-data") is None
     summary = rendered.find("summary", string="Model answers")
     assert summary is not None
     answers = summary.find_parent("details")
@@ -196,6 +231,7 @@ def test_triage_failed_provider_preserves_report(
     )
     assert response.status_code == 500
     assert "Provider unavailable" in response.text
+    assert "Triage incomplete" in response.text
     assert "Parsed email" in response.text
     assert "&lt;script&gt;" in response.text
     assert 'aria-label="Sender and subject"' in response.text

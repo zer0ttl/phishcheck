@@ -5,7 +5,7 @@
 {% macro probability(label, value, tone) %}
   <div class="probability-row {{ tone }}">
     <div class="probability-label"><span>{{ label }}</span><strong>{{ percent(value) }}</strong></div>
-    <div class="progress progress-sm" aria-hidden="true">{{ bar(value) }}</div>
+    <div class="progress-track" aria-hidden="true">{{ bar(value) }}</div>
   </div>
 {% endmacro %}
 <details class="model-answers">
@@ -37,7 +37,7 @@
             {% if finding.probability is none %}
               <div class="finding-status">Unscored</div>
             {% else %}
-              <div class="progress progress-sm" aria-hidden="true">
+              <div class="progress-track" aria-hidden="true">
                 {{ bar(finding.probability) }}{{ bar(1 - finding.probability, 'probability-no') }}
               </div>
               <div class="probability-label finding-status">

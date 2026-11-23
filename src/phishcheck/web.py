@@ -121,7 +121,13 @@ def create_app(settings: ApplicationSettings | None = None) -> FastAPI:
             request,
             "index.html",
             {
+                "action": action,
                 "parsed": run.parsed,
+                "reply_to": [
+                    header.value
+                    for header in (run.parsed.headers_all if run.parsed else ())
+                    if header.name.casefold() == "reply-to"
+                ],
                 "verdict": run.verdict,
                 "verdict_label": run.verdict.label if run.verdict else None,
                 "verdict_labels": VERDICT_LABELS,

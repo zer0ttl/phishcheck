@@ -1,40 +1,58 @@
 {% set extraction_status = {'complete': 'Complete', 'truncated': 'Truncated', 'unavailable': 'Unavailable', 'not_extracted': 'Not extracted'} %}
-<div class="evidence-heading">
-  <h2>Parsed evidence</h2>
-  <code>{{ parsed.filename }}</code>
-</div>
-<div class="evidence-grid">
-  <section class="card" aria-label="Sender and subject">
-    <div class="card-header"><h3 class="card-title">Sender and subject</h3></div>
-    <dl class="card-body message-headers">
-      <dt>From</dt><dd>{{ parsed.headers.get('From') or 'Missing' }}</dd>
-      <dt>Subject</dt><dd>{{ parsed.headers.get('Subject') or 'Missing' }}</dd>
-    </dl>
-  </section>
-  <section class="card" aria-label="Links">
-    <div class="card-header"><h3 class="card-title">Links</h3><span class="badge bg-secondary-lt ms-auto">{{ parsed.urls | length }}</span></div>
-    <ul class="list-group list-group-flush">
-      {% for link in parsed.urls %}
-      <li class="list-group-item link-evidence">
-        <span>{{ link.text or 'No display text' }}</span>
-        <code>{{ link.url or 'No destination' }}</code>
-      </li>
-      {% else %}
-      <li class="list-group-item text-secondary">No links extracted.</li>
-      {% endfor %}
-    </ul>
-  </section>
-  <section class="card" aria-label="Attachments">
-    <div class="card-header"><h3 class="card-title">Attachments</h3><span class="badge bg-secondary-lt ms-auto">{{ parsed.attachments | length }}</span></div>
-    <ul class="list-group list-group-flush">
-      {% for attachment in parsed.attachments %}
-      <li class="list-group-item attachment-evidence">
-        <code>{{ attachment.name or 'Unnamed attachment' }}</code>
-        <span class="badge {{ 'bg-green-lt' if attachment.status == 'complete' else 'bg-yellow-lt' }}">{{ extraction_status[attachment.status] }}</span>
-      </li>
-      {% else %}
-      <li class="list-group-item text-secondary">No attachments found.</li>
-      {% endfor %}
-    </ul>
-  </section>
-</div>
+<section class="report-card mt-4.5" aria-labelledby="evidence-heading">
+  <div class="report-section-heading"><h2 id="evidence-heading">Evidence</h2></div>
+  <div class="evidence-grid">
+    <section aria-label="Sender and subject">
+      <dl class="divide-y divide-zinc-200">
+        <div class="evidence-item">
+          <dt>Subject</dt>
+          <dd>{{ parsed.headers.get('Subject') or 'Missing' }}</dd>
+        </div>
+        <div class="evidence-item">
+          <dt>Sender</dt>
+          <dd>{{ parsed.headers.get('From') or 'Missing' }}</dd>
+        </div>
+      </dl>
+      {% if reply_to or parsed.headers.get('Return-Path') %}
+      <details class="evidence-disclosure">
+        <summary>{{ 'Reply-To' if reply_to else 'Return-Path' }}</summary>
+        {% if reply_to %}
+        {% for value in reply_to %}
+        <p class="mt-1.25 wrap-anywhere text-zinc-600">{{ value }}</p>
+        {% endfor %}
+        {% else %}
+        <p class="mt-1.25 wrap-anywhere text-zinc-600">{{ parsed.headers['Return-Path'] }}</p>
+        {% endif %}
+      </details>
+      {% endif %}
+    </section>
+    <div class="divide-y divide-zinc-200">
+      <section class="evidence-item" aria-label="Links">
+        <div class="evidence-title"><h3>Links</h3><span class="evidence-badge bg-zinc-100 text-zinc-700">{{ parsed.urls | length }}</span></div>
+        <ul class="mt-1 space-y-2">
+          {% for link in parsed.urls %}
+          <li class="grid gap-0.5">
+            <span>{{ link.text or 'No display text' }}</span>
+            <code>{{ link.url or 'No destination' }}</code>
+          </li>
+          {% else %}
+          <li>No links extracted.</li>
+          {% endfor %}
+        </ul>
+      </section>
+      <section class="evidence-item" aria-label="Attachments">
+        <div class="evidence-title"><h3>Attachments</h3><span class="evidence-badge bg-zinc-100 text-zinc-700">{{ parsed.attachments | length }}</span></div>
+        <ul class="mt-1 space-y-2">
+          {% for attachment in parsed.attachments %}
+          <li class="flex flex-wrap items-baseline justify-between gap-x-2 gap-y-1.25">
+            <code>{{ attachment.name or 'Unnamed attachment' }}</code>
+            <span class="evidence-badge {{ 'bg-green-50 text-green-800' if attachment.status == 'complete' else 'bg-amber-50 text-amber-900' }}">{{ extraction_status[attachment.status] }}</span>
+          </li>
+          {% else %}
+          <li>No attachments found.</li>
+          {% endfor %}
+        </ul>
+      </section>
+    </div>
+  </div>
+</section>
