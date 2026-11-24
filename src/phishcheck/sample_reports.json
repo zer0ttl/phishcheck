@@ -1,0 +1,1777 @@
+{
+  "docusign": {
+    "title": "DocuSign impersonation",
+    "description": "An impersonated signing service and a suspicious link.",
+    "source_path": "labs/docusign_phishing/emls/received/docusign.evil.eml",
+    "source_revision": "28735fd4c9600d016d172df3ebc583d0bd278530",
+    "model": "Jev 1.14.0",
+    "parsed": {
+      "filename": "docusign.evil.eml",
+      "sha256": "5c95a125ccac0e11783969e814f8327a3928c336689cfd54fd532c69b1e91419",
+      "headers": {
+        "From": "Document Desk <sender@document-review.example>",
+        "To": "Analyst <recipient@example.org>",
+        "Subject": "Document review notice"
+      },
+      "body": "The message presents itself as a document-signing notice and asks the recipient to review a document. Its link is shown here with a defanged example destination.",
+      "body_status": "complete",
+      "urls": [
+        {
+          "text": "Review document",
+          "url": "hxxps[:]//document-review[.]example/preview"
+        }
+      ],
+      "attachments": [
+        {
+          "name": "document-attachment",
+          "content_type": "image/jpeg",
+          "size_bytes": 36180,
+          "status": "unavailable",
+          "detection": {
+            "status": "ok",
+            "label": "jpeg",
+            "mime_type": "image/jpeg",
+            "score": 0.9999990463256836
+          }
+        }
+      ],
+      "headers_all": [
+        {
+          "name": "From",
+          "value": "Document Desk <sender@document-review.example>"
+        },
+        {
+          "name": "To",
+          "value": "Analyst <recipient@example.org>"
+        },
+        {
+          "name": "Subject",
+          "value": "Document review notice"
+        }
+      ],
+      "detection": {
+        "status": "ok",
+        "label": "eml",
+        "mime_type": "message/rfc822",
+        "score": 0.999998927116394
+      }
+    },
+    "verdict": {
+      "final_verdict": "likely_phishing",
+      "model_choice": {
+        "choice": "likely_phishing",
+        "probabilities": {
+          "likely_phishing": 0.98,
+          "likely_legitimate": 0.0,
+          "unsolicited_bulk_email": 0.0,
+          "needs_review": 0.02
+        },
+        "confidence": 0.97
+      },
+      "phishing_evidence_score": {
+        "score": 3.1799999999999997,
+        "probabilities": {
+          "0": 0.0,
+          "1": 0.0,
+          "2": 0.04,
+          "3": 0.74,
+          "4": 0.22
+        },
+        "confidence": 0.78
+      },
+      "benign_explanation": 0.2,
+      "review_reasons": [],
+      "attacks": [
+        "malicious_url",
+        "targeted",
+        "impersonation",
+        "third_party_impersonation"
+      ],
+      "outcome": "classified",
+      "judgments": [
+        {
+          "classification": "credential_harvesting",
+          "probability": 0.69,
+          "status": "uncertain",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.Subject",
+            "body",
+            "urls"
+          ]
+        },
+        {
+          "classification": "drive_by_download",
+          "probability": null,
+          "status": "insufficient_evidence",
+          "missing_field": "destination_behavior",
+          "evidence_fields": [
+            "urls"
+          ]
+        },
+        {
+          "classification": "reconnaissance",
+          "probability": 0.18,
+          "status": "unsupported",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.Subject",
+            "body",
+            "urls"
+          ]
+        },
+        {
+          "classification": "reply_solicitation",
+          "probability": 0.25,
+          "status": "uncertain",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.Subject",
+            "body",
+            "urls"
+          ]
+        },
+        {
+          "classification": "spoofing",
+          "probability": 0.33,
+          "status": "uncertain",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.From",
+            "headers.Authentication-Results",
+            "headers.Received-SPF"
+          ]
+        },
+        {
+          "classification": "malicious_attachment",
+          "probability": null,
+          "status": "insufficient_evidence",
+          "missing_field": "attachments.text",
+          "evidence_fields": [
+            "attachments.name",
+            "attachments.content_type",
+            "attachments.detected_type"
+          ]
+        },
+        {
+          "classification": "malicious_url",
+          "probability": 0.88,
+          "status": "supported",
+          "missing_field": null,
+          "evidence_fields": [
+            "urls"
+          ]
+        },
+        {
+          "classification": "malicious_web_app_integration",
+          "probability": 0.07,
+          "status": "unsupported",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.Subject",
+            "body",
+            "urls"
+          ]
+        },
+        {
+          "classification": "malware",
+          "probability": 0.64,
+          "status": "uncertain",
+          "missing_field": null,
+          "evidence_fields": [
+            "urls",
+            "attachments.name",
+            "attachments.content_type",
+            "attachments.detected_type",
+            "body"
+          ]
+        },
+        {
+          "classification": "compromised_sender",
+          "probability": null,
+          "status": "insufficient_evidence",
+          "missing_field": "account_evidence",
+          "evidence_fields": [
+            "headers.Subject",
+            "body",
+            "urls"
+          ]
+        },
+        {
+          "classification": "email_thread_hijacking",
+          "probability": null,
+          "status": "insufficient_evidence",
+          "missing_field": "thread_evidence",
+          "evidence_fields": [
+            "headers.Subject",
+            "body",
+            "urls"
+          ]
+        },
+        {
+          "classification": "financial_fraud",
+          "probability": 0.2,
+          "status": "unsupported",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.Subject",
+            "body",
+            "urls"
+          ]
+        },
+        {
+          "classification": "webmail_abuse",
+          "probability": 0.19,
+          "status": "unsupported",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.Subject",
+            "body",
+            "urls"
+          ]
+        },
+        {
+          "classification": "high_value_target",
+          "probability": 0.28,
+          "status": "uncertain",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.To",
+            "headers.Subject",
+            "body",
+            "urls"
+          ]
+        },
+        {
+          "classification": "opportunistic",
+          "probability": 0.51,
+          "status": "uncertain",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.Subject",
+            "body",
+            "urls"
+          ]
+        },
+        {
+          "classification": "targeted",
+          "probability": 0.84,
+          "status": "supported",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.To",
+            "headers.Subject",
+            "body",
+            "urls"
+          ]
+        },
+        {
+          "classification": "polymorphic",
+          "probability": null,
+          "status": "insufficient_evidence",
+          "missing_field": "campaign_samples",
+          "evidence_fields": [
+            "headers.Subject",
+            "body",
+            "urls"
+          ]
+        },
+        {
+          "classification": "impersonation",
+          "probability": 0.84,
+          "status": "supported",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.From",
+            "headers.Authentication-Results",
+            "headers.Received-SPF",
+            "headers.Subject",
+            "body",
+            "urls"
+          ]
+        },
+        {
+          "classification": "government_agency_impersonation",
+          "probability": 0.05,
+          "status": "unsupported",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.From",
+            "headers.Authentication-Results",
+            "headers.Received-SPF",
+            "headers.Subject",
+            "body",
+            "urls"
+          ]
+        },
+        {
+          "classification": "third_party_impersonation",
+          "probability": 0.9,
+          "status": "supported",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.From",
+            "headers.Authentication-Results",
+            "headers.Received-SPF",
+            "headers.Subject",
+            "body",
+            "urls"
+          ]
+        },
+        {
+          "classification": "trusted_third_party_impersonation",
+          "probability": null,
+          "status": "insufficient_evidence",
+          "missing_field": "relationship_evidence",
+          "evidence_fields": [
+            "headers.From",
+            "headers.Authentication-Results",
+            "headers.Received-SPF",
+            "headers.Subject",
+            "body",
+            "urls"
+          ]
+        },
+        {
+          "classification": "vip_impersonation",
+          "probability": 0.07,
+          "status": "unsupported",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.From",
+            "headers.Authentication-Results",
+            "headers.Received-SPF",
+            "headers.Subject",
+            "body",
+            "urls"
+          ]
+        },
+        {
+          "classification": "incorrectly_submitted",
+          "probability": null,
+          "status": "insufficient_evidence",
+          "missing_field": "submission_context",
+          "evidence_fields": [
+            "headers.Subject",
+            "body",
+            "urls"
+          ]
+        },
+        {
+          "classification": "legitimate_email",
+          "probability": null,
+          "status": "insufficient_evidence",
+          "missing_field": "attachments.text",
+          "evidence_fields": [
+            "headers.From",
+            "headers.Authentication-Results",
+            "headers.Received-SPF",
+            "headers.Subject",
+            "body",
+            "urls"
+          ]
+        },
+        {
+          "classification": "unsolicited_email",
+          "probability": null,
+          "status": "insufficient_evidence",
+          "missing_field": "attachments.text",
+          "evidence_fields": [
+            "headers.Subject",
+            "body",
+            "urls"
+          ]
+        },
+        {
+          "classification": "phishing_simulation",
+          "probability": null,
+          "status": "insufficient_evidence",
+          "missing_field": "authorized_simulation",
+          "evidence_fields": [
+            "headers.Subject",
+            "body",
+            "urls"
+          ]
+        }
+      ]
+    }
+  },
+  "microsoft-qr": {
+    "title": "Microsoft QR phishing",
+    "description": "A QR image with unavailable attachment text.",
+    "source_path": "labs/microsoft_qr/emls/received/qr_code.evil.eml",
+    "source_revision": "28735fd4c9600d016d172df3ebc583d0bd278530",
+    "model": "Jev 1.14.0",
+    "parsed": {
+      "filename": "qr_code.evil.eml",
+      "sha256": "2db7d4f6daa7092a0cd96b218d9bd35e2fb41a41b71c7389b2c1e6ae2096d8a1",
+      "headers": {
+        "From": "Account Desk <sender@account-notice.example>",
+        "To": "Analyst <recipient@example.org>",
+        "Subject": "Account notice with a QR image"
+      },
+      "body": "The message presents an account-related request and includes a QR image. The recorded parser could identify the image attachment, but no text was recovered from it.",
+      "body_status": "complete",
+      "urls": [],
+      "attachments": [
+        {
+          "name": "account-notice-image",
+          "content_type": "image/jpeg",
+          "size_bytes": 71780,
+          "status": "unavailable",
+          "detection": {
+            "status": "ok",
+            "label": "png",
+            "mime_type": "image/png",
+            "score": 0.9999585151672363
+          }
+        }
+      ],
+      "headers_all": [
+        {
+          "name": "From",
+          "value": "Account Desk <sender@account-notice.example>"
+        },
+        {
+          "name": "To",
+          "value": "Analyst <recipient@example.org>"
+        },
+        {
+          "name": "Subject",
+          "value": "Account notice with a QR image"
+        }
+      ],
+      "detection": {
+        "status": "ok",
+        "label": "eml",
+        "mime_type": "message/rfc822",
+        "score": 0.9999982118606567
+      }
+    },
+    "verdict": {
+      "final_verdict": "likely_phishing",
+      "model_choice": {
+        "choice": "likely_phishing",
+        "probabilities": {
+          "likely_phishing": 0.82,
+          "likely_legitimate": 0.0,
+          "unsolicited_bulk_email": 0.0,
+          "needs_review": 0.18
+        },
+        "confidence": 0.76
+      },
+      "phishing_evidence_score": {
+        "score": 2.65,
+        "probabilities": {
+          "0": 0.0,
+          "1": 0.03,
+          "2": 0.32,
+          "3": 0.62,
+          "4": 0.03
+        },
+        "confidence": 0.66
+      },
+      "benign_explanation": 0.2,
+      "review_reasons": [],
+      "attacks": [
+        "credential_harvesting",
+        "spoofing",
+        "impersonation"
+      ],
+      "outcome": "classified",
+      "judgments": [
+        {
+          "classification": "credential_harvesting",
+          "probability": 0.92,
+          "status": "supported",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "drive_by_download",
+          "probability": null,
+          "status": "insufficient_evidence",
+          "missing_field": "destination_behavior",
+          "evidence_fields": []
+        },
+        {
+          "classification": "reconnaissance",
+          "probability": 0.32,
+          "status": "uncertain",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "reply_solicitation",
+          "probability": 0.25,
+          "status": "uncertain",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "spoofing",
+          "probability": 0.84,
+          "status": "supported",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.From",
+            "headers.Return-Path"
+          ]
+        },
+        {
+          "classification": "malicious_attachment",
+          "probability": null,
+          "status": "insufficient_evidence",
+          "missing_field": "attachments.text",
+          "evidence_fields": [
+            "attachments.name",
+            "attachments.content_type",
+            "attachments.detected_type"
+          ]
+        },
+        {
+          "classification": "malicious_url",
+          "probability": null,
+          "status": "insufficient_evidence",
+          "missing_field": "urls",
+          "evidence_fields": []
+        },
+        {
+          "classification": "malicious_web_app_integration",
+          "probability": 0.28,
+          "status": "uncertain",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "malware",
+          "probability": 0.12,
+          "status": "unsupported",
+          "missing_field": null,
+          "evidence_fields": [
+            "attachments.name",
+            "attachments.content_type",
+            "attachments.detected_type",
+            "body"
+          ]
+        },
+        {
+          "classification": "compromised_sender",
+          "probability": null,
+          "status": "insufficient_evidence",
+          "missing_field": "account_evidence",
+          "evidence_fields": [
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "email_thread_hijacking",
+          "probability": null,
+          "status": "insufficient_evidence",
+          "missing_field": "thread_evidence",
+          "evidence_fields": [
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "financial_fraud",
+          "probability": 0.07,
+          "status": "unsupported",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "webmail_abuse",
+          "probability": 0.73,
+          "status": "uncertain",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "high_value_target",
+          "probability": 0.11,
+          "status": "unsupported",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.To",
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "opportunistic",
+          "probability": 0.37,
+          "status": "uncertain",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "targeted",
+          "probability": 0.77,
+          "status": "uncertain",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.To",
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "polymorphic",
+          "probability": null,
+          "status": "insufficient_evidence",
+          "missing_field": "campaign_samples",
+          "evidence_fields": [
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "impersonation",
+          "probability": 0.89,
+          "status": "supported",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.From",
+            "headers.Return-Path",
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "government_agency_impersonation",
+          "probability": 0.03,
+          "status": "unsupported",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.From",
+            "headers.Return-Path",
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "third_party_impersonation",
+          "probability": 0.2,
+          "status": "unsupported",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.From",
+            "headers.Return-Path",
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "trusted_third_party_impersonation",
+          "probability": null,
+          "status": "insufficient_evidence",
+          "missing_field": "relationship_evidence",
+          "evidence_fields": [
+            "headers.From",
+            "headers.Return-Path",
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "vip_impersonation",
+          "probability": 0.05,
+          "status": "unsupported",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.From",
+            "headers.Return-Path",
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "incorrectly_submitted",
+          "probability": null,
+          "status": "insufficient_evidence",
+          "missing_field": "submission_context",
+          "evidence_fields": [
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "legitimate_email",
+          "probability": null,
+          "status": "insufficient_evidence",
+          "missing_field": "attachments.text",
+          "evidence_fields": [
+            "headers.From",
+            "headers.Return-Path",
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "unsolicited_email",
+          "probability": null,
+          "status": "insufficient_evidence",
+          "missing_field": "attachments.text",
+          "evidence_fields": [
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "phishing_simulation",
+          "probability": null,
+          "status": "insufficient_evidence",
+          "missing_field": "authorized_simulation",
+          "evidence_fields": [
+            "headers.Subject",
+            "body"
+          ]
+        }
+      ]
+    }
+  },
+  "qakbot-onenote": {
+    "title": "QakBot OneNote",
+    "description": "A document attachment with recovered text and malware findings.",
+    "source_path": "labs/qakbot_onenote/emls/received/qakbot_onenote.evil.eml",
+    "source_revision": "28735fd4c9600d016d172df3ebc583d0bd278530",
+    "model": "Jev 1.14.0",
+    "parsed": {
+      "filename": "qakbot_onenote.evil.eml",
+      "sha256": "219e4ee6f1d3a2b3604016749f71d32a71bcb8e1503346a3c2ffc8ce4294f159",
+      "headers": {
+        "From": "Shared Documents <sender@shared-documents.example>",
+        "To": "Analyst <recipient@example.org>",
+        "Subject": "Shared notes"
+      },
+      "body": "The message is framed as an ordinary file handoff and includes a OneNote document. The attachment row shows the recorded extraction status.",
+      "body_status": "complete",
+      "urls": [],
+      "attachments": [
+        {
+          "name": "shared-notes",
+          "content_type": "application/octet-stream",
+          "size_bytes": 101976,
+          "status": "complete",
+          "detection": {
+            "status": "ok",
+            "label": "one",
+            "mime_type": "application/msonenote",
+            "score": 0.9999595880508423
+          }
+        }
+      ],
+      "headers_all": [
+        {
+          "name": "From",
+          "value": "Shared Documents <sender@shared-documents.example>"
+        },
+        {
+          "name": "To",
+          "value": "Analyst <recipient@example.org>"
+        },
+        {
+          "name": "Subject",
+          "value": "Shared notes"
+        }
+      ],
+      "detection": {
+        "status": "ok",
+        "label": "eml",
+        "mime_type": "message/rfc822",
+        "score": 0.9999908208847046
+      }
+    },
+    "verdict": {
+      "final_verdict": "likely_phishing",
+      "model_choice": {
+        "choice": "likely_phishing",
+        "probabilities": {
+          "likely_phishing": 1.0,
+          "likely_legitimate": 0.0,
+          "unsolicited_bulk_email": 0.0,
+          "needs_review": 0.0
+        },
+        "confidence": 1.0
+      },
+      "phishing_evidence_score": {
+        "score": 3.82,
+        "probabilities": {
+          "0": 0.0,
+          "1": 0.0,
+          "2": 0.0,
+          "3": 0.18,
+          "4": 0.82
+        },
+        "confidence": 0.85
+      },
+      "benign_explanation": 0.18,
+      "review_reasons": [],
+      "attacks": [
+        "malicious_attachment",
+        "malware",
+        "third_party_impersonation"
+      ],
+      "outcome": "classified",
+      "judgments": [
+        {
+          "classification": "credential_harvesting",
+          "probability": 0.08,
+          "status": "unsupported",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "drive_by_download",
+          "probability": null,
+          "status": "insufficient_evidence",
+          "missing_field": "destination_behavior",
+          "evidence_fields": []
+        },
+        {
+          "classification": "reconnaissance",
+          "probability": 0.12,
+          "status": "unsupported",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "reply_solicitation",
+          "probability": 0.49,
+          "status": "uncertain",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "spoofing",
+          "probability": 0.1,
+          "status": "unsupported",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.From",
+            "headers.Return-Path"
+          ]
+        },
+        {
+          "classification": "malicious_attachment",
+          "probability": 0.98,
+          "status": "supported",
+          "missing_field": null,
+          "evidence_fields": [
+            "attachments.name",
+            "attachments.content_type",
+            "attachments.text",
+            "attachments.detected_type"
+          ]
+        },
+        {
+          "classification": "malicious_url",
+          "probability": null,
+          "status": "insufficient_evidence",
+          "missing_field": "urls",
+          "evidence_fields": []
+        },
+        {
+          "classification": "malicious_web_app_integration",
+          "probability": 0.02,
+          "status": "unsupported",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "malware",
+          "probability": 0.96,
+          "status": "supported",
+          "missing_field": null,
+          "evidence_fields": [
+            "attachments.name",
+            "attachments.content_type",
+            "attachments.text",
+            "attachments.detected_type",
+            "body"
+          ]
+        },
+        {
+          "classification": "compromised_sender",
+          "probability": null,
+          "status": "insufficient_evidence",
+          "missing_field": "account_evidence",
+          "evidence_fields": [
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "email_thread_hijacking",
+          "probability": null,
+          "status": "insufficient_evidence",
+          "missing_field": "thread_evidence",
+          "evidence_fields": [
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "financial_fraud",
+          "probability": 0.48,
+          "status": "uncertain",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "webmail_abuse",
+          "probability": 0.06,
+          "status": "unsupported",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "high_value_target",
+          "probability": 0.36,
+          "status": "uncertain",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.To",
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "opportunistic",
+          "probability": 0.45,
+          "status": "uncertain",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "targeted",
+          "probability": 0.36,
+          "status": "uncertain",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.To",
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "polymorphic",
+          "probability": null,
+          "status": "insufficient_evidence",
+          "missing_field": "campaign_samples",
+          "evidence_fields": [
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "impersonation",
+          "probability": 0.28,
+          "status": "uncertain",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.From",
+            "headers.Return-Path",
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "government_agency_impersonation",
+          "probability": 0.02,
+          "status": "unsupported",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.From",
+            "headers.Return-Path",
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "third_party_impersonation",
+          "probability": 0.85,
+          "status": "supported",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.From",
+            "headers.Return-Path",
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "trusted_third_party_impersonation",
+          "probability": null,
+          "status": "insufficient_evidence",
+          "missing_field": "relationship_evidence",
+          "evidence_fields": [
+            "headers.From",
+            "headers.Return-Path",
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "vip_impersonation",
+          "probability": 0.11,
+          "status": "unsupported",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.From",
+            "headers.Return-Path",
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "incorrectly_submitted",
+          "probability": null,
+          "status": "insufficient_evidence",
+          "missing_field": "submission_context",
+          "evidence_fields": [
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "legitimate_email",
+          "probability": 0.01,
+          "status": "unsupported",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.From",
+            "headers.Return-Path",
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "unsolicited_email",
+          "probability": 0.06,
+          "status": "unsupported",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "phishing_simulation",
+          "probability": null,
+          "status": "insufficient_evidence",
+          "missing_field": "authorized_simulation",
+          "evidence_fields": [
+            "headers.Subject",
+            "body"
+          ]
+        }
+      ]
+    }
+  },
+  "payroll-fraud": {
+    "title": "Payroll fraud",
+    "description": "A payment-related request with evidence in the message body.",
+    "source_path": "labs/payroll_fraud/emls/received/payroll_fraud.evil.eml",
+    "source_revision": "28735fd4c9600d016d172df3ebc583d0bd278530",
+    "model": "Jev 1.14.0",
+    "parsed": {
+      "filename": "payroll_fraud.evil.eml",
+      "sha256": "e19fcb6d8966d48ea1f5c1cd287506647bf3ec25d38e29df77743b1f49c83b76",
+      "headers": {
+        "From": "Payroll Request <sender@payroll-request.example>",
+        "To": "Analyst <recipient@example.org>",
+        "Subject": "Payroll change request"
+      },
+      "body": "The message asks the recipient to change payroll arrangements. The example has no links or attachments. The evidence comes from the request in the message itself.",
+      "body_status": "complete",
+      "urls": [],
+      "attachments": [],
+      "headers_all": [
+        {
+          "name": "From",
+          "value": "Payroll Request <sender@payroll-request.example>"
+        },
+        {
+          "name": "To",
+          "value": "Analyst <recipient@example.org>"
+        },
+        {
+          "name": "Subject",
+          "value": "Payroll change request"
+        }
+      ],
+      "detection": {
+        "status": "ok",
+        "label": "eml",
+        "mime_type": "message/rfc822",
+        "score": 0.935019850730896
+      }
+    },
+    "verdict": {
+      "final_verdict": "likely_phishing",
+      "model_choice": {
+        "choice": "likely_phishing",
+        "probabilities": {
+          "likely_phishing": 0.94,
+          "likely_legitimate": 0.0,
+          "unsolicited_bulk_email": 0.0,
+          "needs_review": 0.06
+        },
+        "confidence": 0.92
+      },
+      "phishing_evidence_score": {
+        "score": 3.0,
+        "probabilities": {
+          "0": 0.0,
+          "1": 0.01,
+          "2": 0.17,
+          "3": 0.63,
+          "4": 0.19
+        },
+        "confidence": 0.68
+      },
+      "benign_explanation": 0.23,
+      "review_reasons": [],
+      "attacks": [
+        "financial_fraud"
+      ],
+      "outcome": "classified",
+      "judgments": [
+        {
+          "classification": "credential_harvesting",
+          "probability": 0.07,
+          "status": "unsupported",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "drive_by_download",
+          "probability": null,
+          "status": "insufficient_evidence",
+          "missing_field": "destination_behavior",
+          "evidence_fields": []
+        },
+        {
+          "classification": "reconnaissance",
+          "probability": 0.16,
+          "status": "unsupported",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "reply_solicitation",
+          "probability": 0.45,
+          "status": "uncertain",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "spoofing",
+          "probability": 0.13,
+          "status": "unsupported",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.From"
+          ]
+        },
+        {
+          "classification": "malicious_attachment",
+          "probability": null,
+          "status": "insufficient_evidence",
+          "missing_field": "attachments",
+          "evidence_fields": []
+        },
+        {
+          "classification": "malicious_url",
+          "probability": null,
+          "status": "insufficient_evidence",
+          "missing_field": "urls",
+          "evidence_fields": []
+        },
+        {
+          "classification": "malicious_web_app_integration",
+          "probability": 0.02,
+          "status": "unsupported",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "malware",
+          "probability": 0.02,
+          "status": "unsupported",
+          "missing_field": null,
+          "evidence_fields": [
+            "body"
+          ]
+        },
+        {
+          "classification": "compromised_sender",
+          "probability": null,
+          "status": "insufficient_evidence",
+          "missing_field": "account_evidence",
+          "evidence_fields": [
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "email_thread_hijacking",
+          "probability": null,
+          "status": "insufficient_evidence",
+          "missing_field": "thread_evidence",
+          "evidence_fields": [
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "financial_fraud",
+          "probability": 0.98,
+          "status": "supported",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "webmail_abuse",
+          "probability": 0.49,
+          "status": "uncertain",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "high_value_target",
+          "probability": 0.76,
+          "status": "uncertain",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.To",
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "opportunistic",
+          "probability": 0.43,
+          "status": "uncertain",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "targeted",
+          "probability": 0.46,
+          "status": "uncertain",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.To",
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "polymorphic",
+          "probability": null,
+          "status": "insufficient_evidence",
+          "missing_field": "campaign_samples",
+          "evidence_fields": [
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "impersonation",
+          "probability": 0.53,
+          "status": "uncertain",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.From",
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "government_agency_impersonation",
+          "probability": 0.03,
+          "status": "unsupported",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.From",
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "third_party_impersonation",
+          "probability": 0.12,
+          "status": "unsupported",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.From",
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "trusted_third_party_impersonation",
+          "probability": null,
+          "status": "insufficient_evidence",
+          "missing_field": "relationship_evidence",
+          "evidence_fields": [
+            "headers.From",
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "vip_impersonation",
+          "probability": 0.56,
+          "status": "uncertain",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.From",
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "incorrectly_submitted",
+          "probability": null,
+          "status": "insufficient_evidence",
+          "missing_field": "submission_context",
+          "evidence_fields": [
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "legitimate_email",
+          "probability": 0.03,
+          "status": "unsupported",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.From",
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "unsolicited_email",
+          "probability": 0.03,
+          "status": "unsupported",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "phishing_simulation",
+          "probability": null,
+          "status": "insufficient_evidence",
+          "missing_field": "authorized_simulation",
+          "evidence_fields": [
+            "headers.Subject",
+            "body"
+          ]
+        }
+      ]
+    }
+  },
+  "vip-impersonation": {
+    "title": "VIP impersonation",
+    "description": "A targeted request involving a high-value recipient.",
+    "source_path": "labs/vip_impersonation/emls/received/vip_impersonation.evil.eml",
+    "source_revision": "28735fd4c9600d016d172df3ebc583d0bd278530",
+    "model": "Jev 1.14.0",
+    "parsed": {
+      "filename": "vip_impersonation.evil.eml",
+      "sha256": "4b693d087e506b8a89e0270a827febd6e951f465258bf8e1987ccb81b879bd15",
+      "headers": {
+        "From": "Office Request <sender@office-request.example>",
+        "To": "Analyst <recipient@example.org>",
+        "Subject": "Targeted office request"
+      },
+      "body": "The message presents a request in the context of a high-value recipient's work. This example shows how a targeted financial request can be assessed without a link or attachment.",
+      "body_status": "complete",
+      "urls": [],
+      "attachments": [],
+      "headers_all": [
+        {
+          "name": "From",
+          "value": "Office Request <sender@office-request.example>"
+        },
+        {
+          "name": "To",
+          "value": "Analyst <recipient@example.org>"
+        },
+        {
+          "name": "Subject",
+          "value": "Targeted office request"
+        }
+      ],
+      "detection": {
+        "status": "ok",
+        "label": "txt",
+        "mime_type": "text/plain",
+        "score": 0.484962522983551
+      }
+    },
+    "verdict": {
+      "final_verdict": "likely_phishing",
+      "model_choice": {
+        "choice": "likely_phishing",
+        "probabilities": {
+          "likely_phishing": 0.88,
+          "likely_legitimate": 0.01,
+          "unsolicited_bulk_email": 0.0,
+          "needs_review": 0.11
+        },
+        "confidence": 0.84
+      },
+      "phishing_evidence_score": {
+        "score": 2.78,
+        "probabilities": {
+          "0": 0.0,
+          "1": 0.01,
+          "2": 0.24,
+          "3": 0.71,
+          "4": 0.04
+        },
+        "confidence": 0.75
+      },
+      "benign_explanation": 0.45,
+      "review_reasons": [],
+      "attacks": [
+        "financial_fraud",
+        "high_value_target",
+        "targeted"
+      ],
+      "outcome": "classified",
+      "judgments": [
+        {
+          "classification": "credential_harvesting",
+          "probability": 0.05,
+          "status": "unsupported",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "drive_by_download",
+          "probability": null,
+          "status": "insufficient_evidence",
+          "missing_field": "destination_behavior",
+          "evidence_fields": []
+        },
+        {
+          "classification": "reconnaissance",
+          "probability": 0.17,
+          "status": "unsupported",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "reply_solicitation",
+          "probability": 0.51,
+          "status": "uncertain",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "spoofing",
+          "probability": 0.38,
+          "status": "uncertain",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.From"
+          ]
+        },
+        {
+          "classification": "malicious_attachment",
+          "probability": null,
+          "status": "insufficient_evidence",
+          "missing_field": "attachments",
+          "evidence_fields": []
+        },
+        {
+          "classification": "malicious_url",
+          "probability": null,
+          "status": "insufficient_evidence",
+          "missing_field": "urls",
+          "evidence_fields": []
+        },
+        {
+          "classification": "malicious_web_app_integration",
+          "probability": 0.01,
+          "status": "unsupported",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "malware",
+          "probability": 0.02,
+          "status": "unsupported",
+          "missing_field": null,
+          "evidence_fields": [
+            "body"
+          ]
+        },
+        {
+          "classification": "compromised_sender",
+          "probability": null,
+          "status": "insufficient_evidence",
+          "missing_field": "account_evidence",
+          "evidence_fields": [
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "email_thread_hijacking",
+          "probability": null,
+          "status": "insufficient_evidence",
+          "missing_field": "thread_evidence",
+          "evidence_fields": [
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "financial_fraud",
+          "probability": 0.94,
+          "status": "supported",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "webmail_abuse",
+          "probability": 0.74,
+          "status": "uncertain",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "high_value_target",
+          "probability": 0.92,
+          "status": "supported",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.To",
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "opportunistic",
+          "probability": 0.4,
+          "status": "uncertain",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "targeted",
+          "probability": 0.8,
+          "status": "supported",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.To",
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "polymorphic",
+          "probability": null,
+          "status": "insufficient_evidence",
+          "missing_field": "campaign_samples",
+          "evidence_fields": [
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "impersonation",
+          "probability": 0.44,
+          "status": "uncertain",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.From",
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "government_agency_impersonation",
+          "probability": 0.02,
+          "status": "unsupported",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.From",
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "third_party_impersonation",
+          "probability": 0.22,
+          "status": "uncertain",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.From",
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "trusted_third_party_impersonation",
+          "probability": null,
+          "status": "insufficient_evidence",
+          "missing_field": "relationship_evidence",
+          "evidence_fields": [
+            "headers.From",
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "vip_impersonation",
+          "probability": 0.77,
+          "status": "uncertain",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.From",
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "incorrectly_submitted",
+          "probability": null,
+          "status": "insufficient_evidence",
+          "missing_field": "submission_context",
+          "evidence_fields": [
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "legitimate_email",
+          "probability": 0.06,
+          "status": "unsupported",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.From",
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "unsolicited_email",
+          "probability": 0.06,
+          "status": "unsupported",
+          "missing_field": null,
+          "evidence_fields": [
+            "headers.Subject",
+            "body"
+          ]
+        },
+        {
+          "classification": "phishing_simulation",
+          "probability": null,
+          "status": "insufficient_evidence",
+          "missing_field": "authorized_simulation",
+          "evidence_fields": [
+            "headers.Subject",
+            "body"
+          ]
+        }
+      ]
+    }
+  }
+}

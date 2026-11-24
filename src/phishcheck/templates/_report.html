@@ -11,6 +11,13 @@
   <a href="{{ url_for('home') }}" class="button">Analyze another email</a>
 </div>
 
+{% if sample %}
+<p class="mb-3.5 text-sm text-zinc-600">
+  <strong class="text-zinc-900">Saved sample · {{ sample.title }}</strong>
+  This preview uses curated message details{% if verdict %} and the recorded {{ sample.model }} assessment{% endif %}.
+</p>
+{% endif %}
+
 {% if verdict %}
 <section class="report-card report-summary verdict verdict-{{ verdict.final_verdict }}" aria-label="Verdict">
   <div>

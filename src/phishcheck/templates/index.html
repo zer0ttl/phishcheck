@@ -41,7 +41,18 @@
         </div>
         <p id="upload-status" role="status"></p>
       </div>
-      <button type="button" class="sample-email" id="sample-email" hidden>Try a sample email</button>
+      <details class="sample-picker" id="sample-picker" hidden>
+        <summary class="sample-email">Try a sample email</summary>
+        <fieldset class="sample-options">
+          <legend class="sr-only">Choose a sample email</legend>
+          {% for sample_id, sample in samples.items() %}
+          <label>
+            <input type="radio" name="sample" value="{{ sample_id }}" data-title="{{ sample.title }}" data-report-url="{{ url_for('sample_report', sample_id=sample_id).path }}">
+            <span><strong>{{ sample.title }}</strong><small>{{ sample.description }}</small></span>
+          </label>
+          {% endfor %}
+        </fieldset>
+      </details>
       <dl class="upload-guide">
         <div><dt>Triage</dt><dd>Get a phishing verdict and see the evidence behind it.</dd></div>
         <div><dt>Parse</dt><dd>Review the sender, links, and attachments from the message.</dd></div>
