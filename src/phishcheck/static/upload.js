@@ -5,15 +5,21 @@ const filePanel = document.getElementById("file-panel");
 const emailFile = document.getElementById("email-file");
 const chooseFile = document.getElementById("choose-file");
 const selectedFile = document.getElementById("selected-file");
-const sampleButton = document.getElementById("sample-email");
+const samplePicker = document.getElementById("sample-picker");
 let submitting = false;
+
+function selectedSample() {
+  return samplePicker.querySelector('input[name="sample"]:checked');
+}
 
 function showSelection(message = "") {
   const file = emailFile.files[0];
-  selectedFile.textContent = file?.name ?? "";
-  selectedFile.hidden = !file;
+  const sample = selectedSample();
+  selectedFile.textContent = sample ? `Sample: ${sample.dataset.title}` : (file?.name ?? "");
+  selectedFile.hidden = !file && !sample;
   chooseFile.textContent = file ? "Change file" : "Choose file";
-  actions.forEach((button) => { button.disabled = !file; });
+  emailFile.required = !sample;
+  actions.forEach((button) => { button.disabled = !file && !sample; });
   uploadStatus.textContent = message;
 }
 
@@ -27,6 +33,8 @@ function validateSelection(file) {
 }
 
 function announceSelection(file) {
+  const sample = selectedSample();
+  if (sample) sample.checked = false;
   showSelection(`${file.name} selected. Choose Triage or Parse.`);
 }
 
@@ -46,18 +54,13 @@ emailFile.addEventListener("change", () => {
   else if (validateSelection(file)) announceSelection(file);
 });
 
-sampleButton.addEventListener("click", () => {
-  const sample = [
-    "From: Taylor <taylor@example.com>",
-    "To: Morgan <morgan@example.com>",
-    "Subject: Team lunch",
-    "MIME-Version: 1.0",
-    "Content-Type: text/plain; charset=UTF-8",
-    "",
-    "Hi Morgan, lunch is in the break room at noon. See you there!",
-    "",
-  ].join("\r\n");
-  selectFile(new File([sample], "sample-message.eml", { type: "message/rfc822" }));
+samplePicker.addEventListener("change", () => {
+  const sample = selectedSample();
+  if (!sample) return;
+  emailFile.value = "";
+  showSelection("Sample selected. Choose Triage or Parse.");
+  samplePicker.open = false;
+  actions[0].focus();
 });
 
 document.addEventListener("dragover", (event) => {
@@ -89,20 +92,31 @@ uploadForm.addEventListener("submit", (event) => {
   }
 
   submitting = true;
-  uploadStatus.textContent = event.submitter?.value === "parse" ? "Parsing email…" : "Triaging email…";
+  const action = event.submitter?.value === "parse" ? "parse" : "triage";
   // Keep the submitter enabled so the browser includes its name and value.
   actions.forEach((button) => button.setAttribute("aria-disabled", "true"));
-  sampleButton.disabled = true;
+  samplePicker.inert = true;
+
+  const sample = selectedSample();
+  if (sample) {
+    event.preventDefault();
+    uploadStatus.textContent = "Opening saved sample…";
+    const reportUrl = new URL(sample.dataset.reportUrl, location.href);
+    reportUrl.searchParams.set("action", action);
+    location.assign(reportUrl);
+    return;
+  }
+  uploadStatus.textContent = action === "parse" ? "Parsing email…" : "Triaging email…";
 });
 
 window.addEventListener("pageshow", () => {
   submitting = false;
-  sampleButton.disabled = false;
+  samplePicker.inert = false;
   actions.forEach((button) => button.removeAttribute("aria-disabled"));
   showSelection();
 });
 
 emailFile.hidden = true;
 chooseFile.hidden = false;
-sampleButton.hidden = false;
+samplePicker.hidden = false;
 showSelection();

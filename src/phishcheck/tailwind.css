@@ -91,8 +91,24 @@
     @apply cursor-wait opacity-65;
   }
 
+  .sample-picker {
+    @apply mt-3.25 border-0 bg-transparent p-0;
+  }
+
   .sample-email {
-    @apply mt-3.25 cursor-pointer py-1.25 text-sm font-[650] text-zinc-900 underline underline-offset-4 disabled:cursor-wait;
+    @apply inline-block cursor-pointer py-1.25 text-sm font-[650] text-zinc-900 underline underline-offset-4;
+  }
+
+  .sample-options {
+    @apply mx-auto mt-2 max-w-lg divide-y divide-zinc-200 rounded-lg border border-zinc-200 bg-white text-left;
+  }
+
+  .sample-options label {
+    @apply flex cursor-pointer items-baseline gap-2.5 px-3 py-2 hover:bg-zinc-50;
+  }
+
+  .sample-options small {
+    @apply block text-sm text-zinc-600;
   }
 
   .upload-guide {

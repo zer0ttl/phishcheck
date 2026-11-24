@@ -28,7 +28,7 @@ def client(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> TestClient:
 def test_parse_upload(client: TestClient) -> None:
     assert 'enctype="multipart/form-data"' in client.get("/").text
     response = client.post(
-        "/", files={"file": ("fixture.eml", MAIL)}, data={"action": "parse"}
+        "/", files={"file": ("docusign.evil.eml", MAIL)}, data={"action": "parse"}
     )
     assert response.status_code == 200
     rendered = BeautifulSoup(response.text, "html.parser")
@@ -84,11 +84,72 @@ def test_home_offers_file_drop_and_sample_email(client: TestClient) -> None:
     choose_file = form.find("button", string="Choose file")
     assert choose_file is not None and choose_file.has_attr("hidden")
     assert form.find("input", attrs={"type": "file", "accept": ".eml,.msg"})
-    assert form.find("button", string="Try a sample email") is not None
+    assert form.find("summary", string="Try a sample email") is not None
+    assert len(form.select('input[type="radio"][name="sample"]')) == 5
     assert [button["value"] for button in form.select('button[type="submit"]')] == [
         "triage",
         "parse",
     ]
+
+
+@pytest.mark.parametrize(
+    ("sample_id", "score"),
+    [
+        ("docusign", 3.18),
+        ("microsoft-qr", 2.65),
+        ("qakbot-onenote", 3.82),
+        ("payroll-fraud", 3.0),
+        ("vip-impersonation", 2.78),
+    ],
+)
+@pytest.mark.parametrize("action", ["parse", "triage"])
+def test_sample_report_uses_saved_evidence(
+    client: TestClient,
+    monkeypatch: pytest.MonkeyPatch,
+    sample_id: str,
+    score: float,
+    action: str,
+) -> None:
+    def unexpected(*args: object, **kwargs: object) -> None:
+        pytest.fail("A saved sample must stay on the local report path")
+
+    for target in (
+        "phishcheck.service.parse",
+        "phishcheck.service.triage",
+        "phishcheck.service.record_run",
+        "phishcheck.extraction.TikaClient.extract",
+        "phishcheck.modules.assess",
+    ):
+        monkeypatch.setattr(target, unexpected)
+
+    response = client.get(f"/samples/{sample_id}", params={"action": action})
+    assert response.status_code == 200
+    page = BeautifulSoup(response.text, "html.parser")
+    assert "Saved sample" in page.get_text()
+    assert page.find("section", attrs={"aria-label": "Sender and subject"}) is not None
+    assert page.find(id="email-upload") is None
+    assessment = page.find("summary", string="Assessment JSON")
+    if action == "triage":
+        assert "Likely phishing" in page.get_text()
+        assert page.find("summary", string="Model answers") is not None
+        assert assessment is not None
+        details = assessment.find_parent("details")
+        assert details is not None
+        saved = details.find("pre")
+        assert saved is not None
+        assert json.loads(saved.get_text())["phishing_evidence_score"][
+            "score"
+        ] == pytest.approx(score)
+    else:
+        assert page.find("section", attrs={"aria-label": "Verdict"}) is None
+        assert assessment is None
+
+
+def test_sample_route_rejects_unknown_sample_and_action(client: TestClient) -> None:
+    assert client.get("/samples/unknown", params={"action": "parse"}).status_code == 404
+    assert (
+        client.get("/samples/docusign", params={"action": "unknown"}).status_code == 422
+    )
 
 
 def test_html_link_pair_is_rendered_as_inert_text(client: TestClient) -> None:
