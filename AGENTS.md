@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-[PLACEHOLDER]
+PhishCheck parses and triages Outlook `.msg` and RFC 822 `.eml` files through a CLI and a local FastAPI web UI. See the [README](README.md) for setup and checks, and the [design notes](docs/dev/phishcheck-design.md) for architecture.
 
 ## ⚠️ CRITICAL RULES - READ FIRST
 
