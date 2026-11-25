@@ -1,0 +1,59 @@
+name: Publish to PyPI
+
+on:
+  release:
+    types: [published]
+
+permissions: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@1db35dd8eee11c5894872e0b383ae6c406cf738d # v10.4.0
+        with:
+          version: '0.11.21'
+          python-version: '3.13'
+          enable-cache: false
+      - name: Check release tag
+        run: |
+          uv run --no-project python - <<'PY'
+          import os
+          import tomllib
+
+          with open("pyproject.toml", "rb") as project_file:
+              version = tomllib.load(project_file)["project"]["version"]
+
+          tag = os.environ["GITHUB_REF_NAME"]
+          if tag != f"v{version}":
+              raise SystemExit(f"Release tag {tag!r} must be v{version}")
+          PY
+      - name: Run tests
+        run: uv run --locked pytest -q
+      - name: Build and check distributions
+        run: |
+          uv build --no-sources
+          uvx twine check --strict dist/*
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: python-distributions
+          path: dist/
+          if-no-files-found: error
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: python-distributions
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086 # v1.14.3
