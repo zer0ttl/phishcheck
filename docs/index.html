@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PhishCheck · Email triage</title>
+<link rel="stylesheet" href="landing.css">
+<script src="theme.js"></script>
+<meta name="description" content="Inspect saved Outlook and RFC 822 emails from the command line or the local PhishCheck web app.">
+</head>
+<body>
+<main>
+<header>
+  <span class="brand">PhishCheck</span>
+  <div class="header-actions">
+    <button id="theme-toggle" type="button" aria-label="Dark mode" title="Toggle dark mode" aria-pressed="false" hidden>
+      <span class="theme-moon" aria-hidden="true">☾</span>
+      <span class="theme-sun" aria-hidden="true">☀</span>
+    </button>
+    <a href="https://github.com/zer0ttl/phishcheck">GitHub ↗</a>
+  </div>
+</header>
+<div class="hero"><div><h1>Triage suspicious emails with Jev</h1><p>Inspect suspicious Outlook and RFC 822 emails. Parse the message to see the evidence, or triage it with a TypeSafe System One decision model.</p>
+<div class="entry-points" aria-label="Ways to use PhishCheck"><a href="#terminal"><strong>Use the CLI ↓</strong><span>Run Parse and Triage from your terminal.</span></a><a href="#web-app"><strong>Use the web app ↓</strong><span>Upload an email and review the report in your browser.</span></a></div></div>
+<img class="preview" src="images/triage.png" alt="PhishCheck report for a saved DocuSign impersonation sample"></div>
+<section class="section" id="terminal"><h2>Command line</h2><div class="install-grid">
+<section><div><h3>Parse an email from your terminal</h3><p>Inspect headers, links, and attachments from a saved email. Parsing works without a provider key.</p>
+<div class="actions"><a href="#install">Run the quickstart</a></div></div>
+<pre class="terminal-output"><code>$ phishcheck parse email.eml
+File: email.eml
+Headers:
+  From: analyst@example.com
+  To: recipient@example.net
+  Subject: Example message
+
+URLs:
+  https://example.com/info -&gt; https://example.com/info
+Attachments:
+Body extraction: complete</code></pre>
+<p class="example-note">Shortened parse output.</p></section>
+
+<section id="triage">
+<div><h3>Triage an email from your terminal</h3><p>Get a verdict, evidence score, and findings from a configured TypeSafe System One decision model.</p><div class="actions"><a href="https://github.com/zer0ttl/phishcheck#prerequisites-and-configuration">Configure triage</a></div></div>
+<pre class="terminal-output"><code>$ phishcheck triage email.eml --json
+{
+  "triage": {
+    "final_verdict": "likely_phishing",
+    "phishing_evidence_score": {"score": 3.0},
+    "attacks": ["spoofing"]
+  },
+  "parse": {"filename": "email.eml"}
+}</code></pre>
+<p class="example-note">Excerpt from a CLI test with a stubbed assessment.</p>
+</section>
+</div></section>
+<section class="hero section" id="web-app">
+  <div>
+    <h2>Local web app</h2>
+    <p>Drop in an Outlook <code>.msg</code> or <code>.eml</code>. Choose <strong>Parse</strong> to inspect the message or <strong>Triage</strong> to get a verdict from your configured TypeSafe decision model.</p>
+    <pre><code>phishcheck serve</code></pre>
+    <p>Open the URL printed in your terminal. You can explore a built-in sample without a provider key.</p>
+    <div class="actions"><a href="#walkthrough">Explore the sample</a></div>
+  </div>
+  <a href="images/upload.png"><img class="preview" src="images/upload.png" alt="PhishCheck web app showing the email upload area, Parse and Triage buttons, and built-in sample choices"></a>
+</section>
+<section class="section" id="install">
+<h2>Installation</h2>
+<div class="install-grid">
+<section><h3>Install with uv</h3><p>Run the commands from the directory containing your email file.</p><pre><code>uv tool install phishcheck
+phishcheck parse email.eml
+phishcheck serve</code></pre></section>
+<section><h3>Docker Compose quickstart</h3><p>Start the stack, then open <code>http://127.0.0.1:8000</code>.</p><pre><code>git clone https://github.com/zer0ttl/phishcheck.git
+cd phishcheck
+docker compose up --build -d</code></pre></section>
+</div>
+</section>
+<section class="section" id="walkthrough"><h2>Explore the sample</h2><p>Follow the saved DocuSign impersonation report from message evidence to verdict.</p>
+<details open><summary>Inspect the message evidence</summary><p>The subject reads “Document review notice.” The “Review document” link points to the defanged destination <code>document-review[.]example</code>. Attachment extraction was unavailable in this saved sample.</p></details>
+<details><summary>Review the verdict</summary><p>The report labels the email <strong>Likely phishing</strong> and rates phishing evidence strength <strong>3.2 out of 4</strong>.</p></details>
+<details><summary>See model answers</summary><img src="images/model-answers.png" alt="Model answer probabilities and individual findings"></details></section>
+<footer class="site-footer" id="footer">
+  <strong>PhishCheck</strong>
+  <div aria-label="Project links">
+    <a href="https://github.com/zer0ttl/phishcheck">GitHub</a>
+    <a href="https://pypi.org/project/phishcheck/">PyPI</a>
+    <a href="https://github.com/zer0ttl/phishcheck/blob/main/LICENSE">MIT license</a>
+  </div>
+</footer>
+</main>
+</body>
+</html>
